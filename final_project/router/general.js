@@ -27,28 +27,84 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-    return res.send(JSON.stringify(books));
+public_users.get('/', function (req, res) {
+    return new Promise((resolve, reject) => {
+        resolve(JSON.stringify(books));
+    })
+    .then(data => {
+        return res.send(data);
+    })
+    .catch(error => {
+        console.error(error);
+        return res.status(500).send({ message: 'Error retrieving book list' });
+    });
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', function (req, res) {
     const ISBN = req.params.isbn;
-    return res.send(books[ISBN]);
- });
+
+    return new Promise((resolve, reject) => {
+        if (books[ISBN]) {
+            resolve(books[ISBN]); 
+        } else {
+            reject(new Error('Book not found')); 
+        }
+    })
+    .then(bookDetails => {
+        return res.send(bookDetails); 
+    })
+    .catch(error => {
+        console.error(error);
+        return res.status(404).send({ message: error.message }); 
+    });
+});
+
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', function (req, res) {
     const author = req.params.author;
-    let filterByAuthor = Object.values(books).filter(book => book.author == author);
-    return res.send(filterByAuthor);
+
+    return new Promise((resolve, reject) => {
+        
+        let filterByAuthor = Object.values(books).filter(book => book.author === author);
+
+        if (filterByAuthor.length > 0) {
+            resolve(filterByAuthor); 
+        } else {
+            reject(new Error('No books found for this author')); 
+        }
+    })
+    .then(filteredBooks => {
+        return res.send(filteredBooks); 
+    })
+    .catch(error => {
+        console.error(error);
+        return res.status(404).send({ message: error.message }); 
+    });
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', function (req, res) {
     const title = req.params.title;
-    let filterByTitle = Object.values(books).filter(book => book.title == title);
-    return res.send(filterByTitle);
+
+    return new Promise((resolve, reject) => {
+        
+        let filterByTitle = Object.values(books).filter(book => book.title === title);
+
+        if (filterByTitle.length > 0) {
+            resolve(filterByTitle); 
+        } else {
+            reject(new Error('No books found with this title')); 
+        }
+    })
+    .then(filteredBooks => {
+        return res.send(filteredBooks); 
+    })
+    .catch(error => {
+        console.error(error);
+        return res.status(404).send({ message: error.message }); 
+    });
 });
 
 //  Get book review
