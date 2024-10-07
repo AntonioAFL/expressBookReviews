@@ -9,9 +9,7 @@ public_users.post("/register", (req,res) => {
     const username = req.body.username.split(" ").join("");
     const password = req.body.password.split(" ").join("");
 
-    let isUsernameAvailable = users.filter(user => user.username.toLowerCase() == username.toLowerCase()) <= 0 ? true : false;
-
-    if(isUsernameAvailable) {
+    if(isValid(username)) {
 
         if (username === "") return res.send({message: "Username not provided"})
         if (password === "") return res.send({message: "Password not provided"}) 
@@ -21,7 +19,6 @@ public_users.post("/register", (req,res) => {
             'password': password
         })
         
-        console.log(`users: ${users}`);
         return res.send({message: "Successful Registration"});
 
     } else {
